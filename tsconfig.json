@@ -34,7 +34,7 @@
     "**/*.tsx",
     "next-env.d.ts",
     ".next/types/**/*.ts"
-  ],
+, "tailwind.config.js", "app/cart/page.jsx", "context/CartContext.tsx", "components/Navbar.tsx", "context/WishlistContext.tsx"  ],
   "exclude": [
     "node_modules"
   ]

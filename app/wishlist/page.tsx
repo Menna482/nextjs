@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useWishlist } from "../../context/WishlistContext";
@@ -5,30 +6,43 @@ import { useCart } from "../../context/CartContext";
 import Image from "next/image";
 
 export default function WishlistPage() {
-  const { wishlist, removeFromWishlist, clearWishlist } = useWishlist();
+  const { wishlistItems, removeFromWishlist, clearWishlist } = useWishlist();
   const { addToCart } = useCart();
 
-  if (wishlist.length === 0) {
-    return <p className="p-10 text-center">Your wishlist is empty ❤️</p>;
+  if (!wishlistItems || wishlistItems.length === 0) {
+    return (
+      <p className="p-10 text-center text-gray-600">
+        Your wishlist is empty ❤️
+      </p>
+    );
   }
+
+  // Move all items to cart
+  const handleMoveAllToCart = async () => {
+    for (const item of wishlistItems) {
+      await addToCart(item._id);
+    }
+    clearWishlist();
+  };
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Your Wishlist</h1>
+      <h1 className="text-2xl font-bold mb-6">My Wishlist</h1>
 
-      <div className="space-y-4">
-        {wishlist.map((item) => (
+      <div className="space-y-6">
+        {wishlistItems.map((item) => (
           <div
-            key={item.id}
+            key={item._id}
             className="flex items-center justify-between border-b pb-4"
           >
+            {/* Product Info */}
             <div className="flex items-center gap-4">
               <Image
                 src={item.imageCover}
                 alt={item.title}
                 width={80}
                 height={80}
-                className="rounded"
+                className="rounded object-contain"
               />
               <div>
                 <h2 className="font-semibold">{item.title}</h2>
@@ -36,21 +50,17 @@ export default function WishlistPage() {
               </div>
             </div>
 
+            {/* Actions */}
             <div className="flex gap-3">
-     
               <button
-                onClick={() => {
-                  addToCart(item); 
-                  removeFromWishlist(item.id);
-                }}
+                onClick={() => addToCart(item._id)}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
               >
                 Add to Cart
               </button>
-
               <button
-                onClick={() => removeFromWishlist(item.id)}
-                className="px-4 py-2 border border-red-600 text-red-600 rounded-lg hover:bg-red-600 hover:text-white"
+                onClick={() => removeFromWishlist(item._id)}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
               >
                 Remove
               </button>
@@ -59,7 +69,14 @@ export default function WishlistPage() {
         ))}
       </div>
 
-      <div className="mt-6 flex justify-end">
+      {/* Footer actions */}
+      <div className="mt-8 flex justify-end gap-4">
+        <button
+          onClick={handleMoveAllToCart}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Move All to Cart
+        </button>
         <button
           onClick={clearWishlist}
           className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
@@ -70,3 +87,4 @@ export default function WishlistPage() {
     </div>
   );
 }
+

@@ -4,53 +4,51 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import Link from "next/link";
+import { toast } from "sonner";
+import { ResetPasswordSchema } from "../schema/ResetPasswordSchema";
 import z from "zod";
-import { loginSchema } from "../schema/LoginSchema";
 
-export default function Login() {
-  const router = useRouter();
+export default function ResetPassword() {
+  const router = useRouter(); // ✅ صح
   const [isLoading, setIsLoading] = useState(false);
 
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<z.infer<typeof loginSchema>>({
+  } = useForm<z.infer<typeof ResetPasswordSchema>>({
     defaultValues: {
       email: "",
-      password: "",
+      newPassword: "",
     },
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(ResetPasswordSchema),
     mode: "onBlur",
   });
 
-  async function handleLogin(values: z.infer<typeof loginSchema>) {
+  async function handleRegister(values: z.infer<typeof ResetPasswordSchema>) {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signin`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/resetPassword`,
         {
-          method: "POST",
+          method: "PUT",
           body: JSON.stringify(values),
           headers: { "Content-Type": "application/json" },
         }
       );
+
       const data = await res.json();
+      console.log(data);
 
-      if (data.message === "success") {
-        // تخزين التوكن في localStorage
-        localStorage.setItem("userToken", data.token);
-
-        toast.success("Login successfully");
-        router.push("/");
+      if (data.token) {
+        toast.success("Password reset successfully");
+        router.push("/login");
       } else {
-        toast.error(data.message);
+        toast.error(data.message || "Something went wrong");
       }
     } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong");
+      toast.error("Server error");
     } finally {
       setIsLoading(false);
     }
@@ -59,10 +57,10 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <form
-        onSubmit={handleSubmit(handleLogin)}
+        onSubmit={handleSubmit(handleRegister)}
         className="w-full max-w-md bg-white shadow-lg rounded-lg p-8"
       >
-        <h1 className="text-2xl font-semibold text-center mb-6">Login</h1>
+        <h1 className="text-2xl font-semibold text-center mb-6">Reset Password</h1>
 
         {/* Email */}
         <div className="mb-4">
@@ -79,27 +77,24 @@ export default function Login() {
           )}
         </div>
 
-        {/* Password */}
+        {/* New Password */}
         <div className="mb-4">
-          <label className="block mb-1 font-medium">Password</label>
+          <label className="block mb-1 font-medium">New Password</label>
           <input
             type="password"
-            {...register("password")}
+            {...register("newPassword")} // ✅ صح
             className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 ${
-              errors.password ? "border-red-500" : "border-gray-300"
+              errors.newPassword ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+          {errors.newPassword && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.newPassword.message}
+            </p>
           )}
         </div>
 
-        <Link
-          href="/forgot-password"
-          className="text-blue-600 hover:underline block mb-4"
-        >
-          Forget Password?
-        </Link>
+        
 
         {/* Submit */}
         <button
@@ -107,7 +102,7 @@ export default function Login() {
           disabled={isLoading}
           className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
         >
-          {isLoading ? "Logging in..." : "Login"}
+          {isLoading ? "Resetting..." : "Reset Password"}
         </button>
       </form>
     </div>

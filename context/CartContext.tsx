@@ -1,87 +1,115 @@
 "use client";
-
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
 
 interface CartItem {
-  id: string;
-  title: string;
+  product: {
+    _id: string;
+    title: string;
+    price: number;
+    imageCover: string;
+  };
+  count: number;
   price: number;
-  imageCover: string;
-  quantity: number;
 }
 
 interface CartContextType {
-  cart: CartItem[];
-  addToCart: (item: Omit<CartItem, "quantity">) => void;
-  removeFromCart: (id: string) => void;
-  increaseQty: (id: string) => void;
-  decreaseQty: (id: string) => void;
-  clearCart: () => void;
+  cartItems: CartItem[];
+  getUserCart: () => Promise<void>;
+  addToCart: (productId: string) => Promise<void>;
+  updateQuantity: (productId: string, count: number) => Promise<void>;
+  removeFromCart: (productId: string) => Promise<void>;
+  clearCart: () => Promise<void>;
 }
 
-const CartContext = createContext<CartContextType | null>(null);
+const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
+export const CartProvider = ({ children }: { children: React.ReactNode }) => {
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  // 🟢 load from localStorage on first render
+  // ✅ Fetch cart
+  const getUserCart = async () => {
+    try {
+      const { data } = await axios.get("https://ecommerce.routemisr.com/api/v1/cart", {
+        headers: { token: localStorage.getItem("userToken") },
+      });
+      setCartItems(data?.data?.products || []);
+    } catch (err) {
+      console.error("Error fetching cart:", err);
+      setCartItems([]);
+    }
+  };
+
+  // ✅ Add to cart
+  const addToCart = async (productId: string) => {
+    try {
+      const { data } = await axios.post(
+        "https://ecommerce.routemisr.com/api/v1/cart",
+        { productId },
+        { headers: { token: localStorage.getItem("userToken") } }
+      );
+      setCartItems(data?.data?.products || []);
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+    }
+  };
+
+  // ✅ Update Quantity
+  const updateQuantity = async (productId: string, count: number) => {
+    try {
+      const { data } = await axios.put(
+        `https://ecommerce.routemisr.com/api/v1/cart/${productId}`,
+        { count },
+        { headers: { token: localStorage.getItem("userToken") } }
+      );
+      setCartItems(data?.data?.products || []);
+    } catch (err) {
+      console.error("Error updating quantity:", err);
+    }
+  };
+
+  // ✅ Remove from cart
+  const removeFromCart = async (productId: string) => {
+    try {
+      const { data } = await axios.delete(
+        `https://ecommerce.routemisr.com/api/v1/cart/${productId}`,
+        { headers: { token: localStorage.getItem("userToken") } }
+      );
+      setCartItems(data?.data?.products || []);
+    } catch (err) {
+      console.error("Error removing from cart:", err);
+    }
+  };
+
+  // ✅ Clear cart
+  const clearCart = async () => {
+    try {
+      await axios.delete("https://ecommerce.routemisr.com/api/v1/cart", {
+        headers: { token: localStorage.getItem("userToken") },
+      });
+      setCartItems([]);
+    } catch (err) {
+      console.error("Error clearing cart:", err);
+    }
+  };
+
   useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) setCart(JSON.parse(storedCart));
+    getUserCart();
   }, []);
-
-  // 🟢 save to localStorage on every change
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  const addToCart = (item: Omit<CartItem, "quantity">) => {
-    setCart((prev) => {
-      const existing = prev.find((p) => p.id === item.id);
-      if (existing) {
-        return prev.map((p) =>
-          p.id === item.id ? { ...p, quantity: p.quantity + 1 } : p
-        );
-      }
-      return [...prev, { ...item, quantity: 1 }];
-    });
-  };
-
-  const removeFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const increaseQty = (id: string) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
-
-  const decreaseQty = (id: string) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
-  };
-
-  const clearCart = () => setCart([]);
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, increaseQty, decreaseQty, clearCart }}
+      value={{ cartItems, getUserCart, addToCart, updateQuantity, removeFromCart, clearCart }}
     >
       {children}
     </CartContext.Provider>
   );
-}
+};
 
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) throw new Error("useCart must be used inside CartProvider");
+  if (!context) {
+    throw new Error("useCart must be used within a CartProvider");
+  }
   return context;
 };

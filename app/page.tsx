@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { AiFillStar } from "react-icons/ai";
@@ -8,7 +9,6 @@ import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import Slidercat from "../components/SliderCat";
 import Image from "next/image";
-
 
 interface Product {
   _id: string;
@@ -24,8 +24,10 @@ export default function FeedPage() {
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
+
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, wishlist } = useWishlist();
+  const wishlistContext = useWishlist();
+  const { wishlistItems, addToWishlist, removeFromWishlist } = wishlistContext;
 
   async function getProducts() {
     try {
@@ -42,21 +44,14 @@ export default function FeedPage() {
     getProducts();
   }, []);
 
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => setMessage(""), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
-
   const filteredProducts = products.filter((product) =>
     product.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <>
-       <Slidercat />
-    
+      <Slidercat />
+
       {message && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
           {message}
@@ -75,12 +70,11 @@ export default function FeedPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6">
         {filteredProducts.map((product) => {
-          const isInWishlist = wishlist.some(
-            (item: any) => item.id === product._id
+          const isInWishlist = wishlistItems.some(
+            (item: any) => item._id === product._id
           );
 
           return (
-         
             <div
               key={product._id}
               className="group border rounded-lg p-4 relative cursor-pointer flex flex-col justify-between"
@@ -113,7 +107,7 @@ export default function FeedPage() {
                       setMessage(`${product.title} removed from wishlist ❌`);
                     } else {
                       addToWishlist({
-                        id: product._id,
+                        _id: product._id,
                         title: product.title,
                         price: product.price,
                         imageCover: product.imageCover,
@@ -128,14 +122,9 @@ export default function FeedPage() {
 
               <button
                 className="bg-green-600 text-white px-4 py-2 rounded-md transition hover:bg-green-700"
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.stopPropagation();
-                  addToCart({
-                    id: product._id,
-                    title: product.title,
-                    price: product.price,
-                    imageCover: product.imageCover,
-                  });
+                  await addToCart(product._id);
                   setMessage(`${product.title} added to cart 🛒`);
                 }}
               >

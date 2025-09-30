@@ -1,10 +1,9 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
-import { useCart } from "../../../context/CartContext"; 
+import { useCart } from "@/context/CartContext";
 
 interface Product {
   _id: string;
@@ -25,6 +24,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [message, setMessage] = useState("");
   const { addToCart } = useCart();
 
+  // جلب بيانات المنتج من API
   async function getProduct() {
     try {
       const { data } = await axios.get(
@@ -40,6 +40,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     getProduct();
   }, [params.id]);
 
+  // إخفاء الرسالة بعد 3 ثواني
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => setMessage(""), 3000);
@@ -53,7 +54,6 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="container mx-auto p-10 grid grid-cols-1 md:grid-cols-2 gap-8">
- 
       {message && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
           {message}
@@ -79,16 +79,11 @@ export default function ProductPage({ params }: ProductPageProps) {
         <p className="mb-4">Category: {product.category?.name}</p>
         <p className="mb-4">⭐ {product.ratingsAverage}</p>
 
-       
+        {/* زر إضافة المنتج للكارت */}
         <button
           className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition"
-          onClick={() => {
-            addToCart({
-              id: product._id,
-              title: product.title,
-              price: product.price,
-              imageCover: product.imageCover,
-            });
+          onClick={async () => {
+            await addToCart(product._id); // تمرير الـ ID فقط
             setMessage(`${product.title} added to cart 🛒`);
           }}
         >

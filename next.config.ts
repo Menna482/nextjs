@@ -1,12 +1,9 @@
-import type { NextConfig } from "next";
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   images: {
     domains: ['ecommerce.routemisr.com'],
   },
-};
-export default nextConfig;
+}
 
-
-
+module.exports = nextConfig
