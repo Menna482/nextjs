@@ -17,12 +17,12 @@ export default function Navbar() {
   return (
     <nav className="bg-white shadow-md">
       <div className="container mx-auto flex items-center justify-between py-4 px-6">
-        {/* Logo */}
+       
         <Link href="/" className="text-2xl font-bold text-green-600">
           E-Shop
         </Link>
 
-        {/* Links */}
+     
         <ul className="flex space-x-6">
           {navLinks.map((link) => (
             <li key={link.href}>
@@ -40,7 +40,7 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Auth buttons */}
+        
         <div className="flex space-x-4">
           <Link
             href="/register"

@@ -62,7 +62,7 @@ export default function RegisterPage() {
       >
         <h1 className="text-2xl font-semibold text-center mb-6">Register</h1>
 
-        {/* Name */}
+      
         <div className="mb-4">
           <label className="block mb-1 font-medium">Name</label>
           <input
@@ -77,7 +77,6 @@ export default function RegisterPage() {
           )}
         </div>
 
-        {/* Email */}
         <div className="mb-4">
           <label className="block mb-1 font-medium">Email</label>
           <input
@@ -92,7 +91,6 @@ export default function RegisterPage() {
           )}
         </div>
 
-        {/* Password */}
         <div className="mb-4">
           <label className="block mb-1 font-medium">Password</label>
           <input
@@ -107,7 +105,6 @@ export default function RegisterPage() {
           )}
         </div>
 
-        {/* Confirm Password */}
         <div className="mb-4">
           <label className="block mb-1 font-medium">Confirm Password</label>
           <input
@@ -121,8 +118,7 @@ export default function RegisterPage() {
             <p className="text-red-500 text-sm mt-1">{errors.rePassword.message}</p>
           )}
         </div>
-
-       {/* Phone */}       
+      
         <div className="mb-4">
           <label className="block mb-1 font-medium">phone</label>
           <input 
@@ -138,8 +134,6 @@ export default function RegisterPage() {
         </div>
 
 
-       
-        {/* Submit */}
         <button
           type="submit"
           disabled={isLoading}
@@ -148,7 +142,6 @@ export default function RegisterPage() {
           {isLoading ? "Registering..." : "Register"}
         </button>
 
-        {/* Error / Success Messages */}
         {errMsg && <p className="mt-4 text-red-600 text-center">{errMsg}</p>}
         {successMsg && <p className="mt-4 text-green-600 text-center">{successMsg}</p>}
 

@@ -11,7 +11,7 @@ export default function ProductCard({ product }: { product: any }) {
       <h3>{product.title}</h3>
       <p>{product.price} EGP</p>
 
-      {/* زر القلب */}
+     
       <button
         onClick={() => addToWishlist(product)}
         style={{

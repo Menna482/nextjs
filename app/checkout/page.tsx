@@ -35,13 +35,13 @@ export default function Checkout() {
       setIsCallingAPI(true);
       try {
         if (isOnline) {
-          // Online Payment
+        
           const session = await onlinePayment(values);
           if (session?.session?.url) {
             window.location.href = session.session.url;
           }
         } else {
-          // Cash on Delivery
+      
           await cashOnDelivery(values);
           Swal.fire({
             position: "center",
@@ -50,7 +50,7 @@ export default function Checkout() {
             showConfirmButton: false,
             timer: 2000,
           });
-          router.push("/"); // رجوع للهوم
+          router.push("/"); 
         }
       } catch (error) {
         console.error("Checkout failed:", error);
@@ -72,7 +72,6 @@ export default function Checkout() {
     >
       <h1 className="text-3xl text-[#212529] mb-10">Checkout Now</h1>
 
-      {/* Details */}
       <div className="mb-5">
         <label htmlFor="details" className="block mb-2 text-sm font-medium">
           Details
@@ -92,7 +91,6 @@ export default function Checkout() {
         )}
       </div>
 
-      {/* Phone */}
       <div className="mb-5">
         <label htmlFor="phone" className="block mb-2 text-sm font-medium">
           Phone No.
@@ -112,7 +110,6 @@ export default function Checkout() {
         )}
       </div>
 
-      {/* City */}
       <div className="mb-5">
         <label htmlFor="city" className="block mb-2 text-sm font-medium">
           City
@@ -132,7 +129,6 @@ export default function Checkout() {
         )}
       </div>
 
-      {/* Submit */}
       {isCallingAPI ? (
         <div className="flex justify-center">
           <ClipLoader />

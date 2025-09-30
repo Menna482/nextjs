@@ -10,7 +10,7 @@ import { ResetPasswordSchema } from "../schema/ResetPasswordSchema";
 import z from "zod";
 
 export default function ResetPassword() {
-  const router = useRouter(); // ✅ صح
+  const router = useRouter(); 
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -62,7 +62,6 @@ export default function ResetPassword() {
       >
         <h1 className="text-2xl font-semibold text-center mb-6">Reset Password</h1>
 
-        {/* Email */}
         <div className="mb-4">
           <label className="block mb-1 font-medium">Email</label>
           <input
@@ -77,12 +76,11 @@ export default function ResetPassword() {
           )}
         </div>
 
-        {/* New Password */}
         <div className="mb-4">
           <label className="block mb-1 font-medium">New Password</label>
           <input
             type="password"
-            {...register("newPassword")} // ✅ صح
+            {...register("newPassword")} 
             className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 ${
               errors.newPassword ? "border-red-500" : "border-gray-300"
             }`}
@@ -94,9 +92,7 @@ export default function ResetPassword() {
           )}
         </div>
 
-        
-
-        {/* Submit */}
+      
         <button
           type="submit"
           disabled={isLoading}

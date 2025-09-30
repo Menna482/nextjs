@@ -16,7 +16,7 @@ export default function CartPage() {
     return <p className="text-center py-10">Your cart is empty 🛒</p>;
   }
 
-  // ✅ إجمالي السعر
+
   const totalPrice = cartItems.reduce((acc, item) => acc + item.price, 0);
 
   return (
@@ -76,7 +76,7 @@ export default function CartPage() {
         </tbody>
       </table>
 
-      {/* ✅ أسفل الجدول */}
+    
       <div className="flex justify-between items-center mt-6">
         <p className="text-lg font-semibold">
           Total Price: <span className="text-green-600">{totalPrice} EGP</span>

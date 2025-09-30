@@ -40,7 +40,7 @@ export default function Login() {
       const data = await res.json();
 
       if (data.message === "success") {
-        // تخزين التوكن في localStorage
+       
         localStorage.setItem("userToken", data.token);
 
         toast.success("Login successfully");
@@ -64,7 +64,6 @@ export default function Login() {
       >
         <h1 className="text-2xl font-semibold text-center mb-6">Login</h1>
 
-        {/* Email */}
         <div className="mb-4">
           <label className="block mb-1 font-medium">Email</label>
           <input
@@ -79,7 +78,6 @@ export default function Login() {
           )}
         </div>
 
-        {/* Password */}
         <div className="mb-4">
           <label className="block mb-1 font-medium">Password</label>
           <input
@@ -101,7 +99,6 @@ export default function Login() {
           Forget Password?
         </Link>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={isLoading}

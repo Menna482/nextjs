@@ -8,7 +8,7 @@ import "swiper/css/navigation";
 import { Navigation, Pagination } from "swiper/modules";
 import Image from "next/image";
 
-// نوع الكاتيجوري
+
 interface Category {
   _id: string;
   name: string;

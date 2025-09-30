@@ -27,7 +27,6 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  // ✅ Fetch cart
   const getUserCart = async () => {
     try {
       const { data } = await axios.get("https://ecommerce.routemisr.com/api/v1/cart", {
@@ -40,7 +39,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ✅ Add to cart
   const addToCart = async (productId: string) => {
     try {
       const { data } = await axios.post(
@@ -54,7 +52,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ✅ Update Quantity
   const updateQuantity = async (productId: string, count: number) => {
     try {
       const { data } = await axios.put(
@@ -68,7 +65,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ✅ Remove from cart
   const removeFromCart = async (productId: string) => {
     try {
       const { data } = await axios.delete(
@@ -81,7 +77,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ✅ Clear cart
   const clearCart = async () => {
     try {
       await axios.delete("https://ecommerce.routemisr.com/api/v1/cart", {

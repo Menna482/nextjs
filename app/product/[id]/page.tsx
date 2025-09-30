@@ -24,7 +24,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [message, setMessage] = useState("");
   const { addToCart } = useCart();
 
-  // جلب بيانات المنتج من API
+
   async function getProduct() {
     try {
       const { data } = await axios.get(
@@ -40,7 +40,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     getProduct();
   }, [params.id]);
 
-  // إخفاء الرسالة بعد 3 ثواني
+
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => setMessage(""), 3000);
@@ -79,11 +79,10 @@ export default function ProductPage({ params }: ProductPageProps) {
         <p className="mb-4">Category: {product.category?.name}</p>
         <p className="mb-4">⭐ {product.ratingsAverage}</p>
 
-        {/* زر إضافة المنتج للكارت */}
         <button
           className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition"
           onClick={async () => {
-            await addToCart(product._id); // تمرير الـ ID فقط
+            await addToCart(product._id); 
             setMessage(`${product.title} added to cart 🛒`);
           }}
         >

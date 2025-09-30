@@ -17,7 +17,6 @@ export default function WishlistPage() {
     );
   }
 
-  // Move all items to cart
   const handleMoveAllToCart = async () => {
     for (const item of wishlistItems) {
       await addToCart(item._id);
@@ -35,7 +34,6 @@ export default function WishlistPage() {
             key={item._id}
             className="flex items-center justify-between border-b pb-4"
           >
-            {/* Product Info */}
             <div className="flex items-center gap-4">
               <Image
                 src={item.imageCover}
@@ -50,7 +48,7 @@ export default function WishlistPage() {
               </div>
             </div>
 
-            {/* Actions */}
+           
             <div className="flex gap-3">
               <button
                 onClick={() => addToCart(item._id)}
@@ -69,7 +67,7 @@ export default function WishlistPage() {
         ))}
       </div>
 
-      {/* Footer actions */}
+  
       <div className="mt-8 flex justify-end gap-4">
         <button
           onClick={handleMoveAllToCart}

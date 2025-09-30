@@ -10,7 +10,7 @@ export default function SafeHydrate({ children }: { children: ReactNode }) {
   }, []);
 
   if (!mounted) {
-    return null; // أو loader صغير
+    return null; 
   }
 
   return <>{children}</>;

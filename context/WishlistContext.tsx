@@ -21,7 +21,7 @@ const WishlistContext = createContext<WishlistContextType | null>(null);
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
-  const { addToCart } = useCart(); // يعمل لأن CartProvider فوقه
+  const { addToCart } = useCart(); 
 
   useEffect(() => {
     if (typeof window !== "undefined") {
