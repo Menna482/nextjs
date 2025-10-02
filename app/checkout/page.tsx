@@ -1,18 +1,18 @@
-
 "use client";
 
 import { useFormik } from "formik";
 import { useState } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 import Swal from "sweetalert2";
-import { useCart } from "../../context/CartContext";
 import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { cartContext } from "../../context/CartContext";
 
 export default function Checkout() {
   const [isCallingAPI, setIsCallingAPI] = useState(false);
-  const { cashOnDelivery, onlinePayment } = useCart();
   const [isOnline, setIsOnline] = useState(false);
   const router = useRouter();
+  const { cashOnDelivery, onlinePayment } = useContext(cartContext);
 
   const formik = useFormik({
     initialValues: {
@@ -35,13 +35,19 @@ export default function Checkout() {
       setIsCallingAPI(true);
       try {
         if (isOnline) {
-        
+         
           const session = await onlinePayment(values);
           if (session?.session?.url) {
             window.location.href = session.session.url;
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Payment Failed",
+              text: "Could not initiate online payment",
+            });
           }
         } else {
-      
+        
           await cashOnDelivery(values);
           Swal.fire({
             position: "center",
@@ -50,7 +56,7 @@ export default function Checkout() {
             showConfirmButton: false,
             timer: 2000,
           });
-          router.push("/"); 
+          router.push("/allorders");
         }
       } catch (error) {
         console.error("Checkout failed:", error);
@@ -68,7 +74,7 @@ export default function Checkout() {
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className="p-4 mx-auto my-6 bg-white rounded-lg shadow-md md:max-w-6xl sm:max-w-2xl"
+      className="p-4 mx-auto my-6 bg-white rounded-lg shadow-md md:max-w-4xl sm:max-w-2xl"
     >
       <h1 className="text-3xl text-[#212529] mb-10">Checkout Now</h1>
 
@@ -162,4 +168,3 @@ export default function Checkout() {
     </form>
   );
 }
-

@@ -1,59 +1,112 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
-import { useCart } from "./CartContext";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { TokenContext } from "./TokenContext"; 
+import { toast } from "react-toastify";
 
-interface WishlistItem {
-  _id: string;
-  title: string;
-  price: number;
-  imageCover: string;
-}
+const WishlistContext = createContext<any>(null);
 
-interface WishlistContextType {
-  wishlistItems: WishlistItem[];
-  addToWishlist: (item: WishlistItem) => void;
-  removeFromWishlist: (id: string) => void;
-  clearWishlist: () => void;
-}
+export const WishlistProvider = ({ children }: { children: React.ReactNode }) => {
+  const { token } = useContext(TokenContext); 
+  const [wishlistItems, setWishlistItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-const WishlistContext = createContext<WishlistContextType | null>(null);
+  const API_URL = "https://ecommerce.routemisr.com/api/v1/wishlist";
+  const headers = { token };
 
-export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
-  const { addToCart } = useCart(); 
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("wishlist");
-      if (stored) setWishlistItems(JSON.parse(stored));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishlistItems));
-  }, [wishlistItems]);
-
-  const addToWishlist = (item: WishlistItem) => {
-    if (!wishlistItems.find((i) => i._id === item._id)) {
-      setWishlistItems([...wishlistItems, item]);
+  const getWishlist = async () => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const { data } = await axios.get(API_URL, { headers });
+      if (data.status === "success") {
+        setWishlistItems(data.data);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching wishlist:", error);
+      toast.error("Failed to load wishlist", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const removeFromWishlist = (id: string) => {
-    setWishlistItems(wishlistItems.filter((item) => item._id !== id));
+  const addToWishlist = async (productId: string) => {
+    try {
+      const { data } = await axios.post(API_URL, { productId }, { headers });
+      if (data.status === "success") {
+        await getWishlist();
+        toast.success("💖 Product added to wishlist!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        return data;
+      }
+    } catch (error) {
+      console.error("❌ Error adding to wishlist:", error);
+      toast.error("Failed to add product to wishlist", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      throw error;
+    }
   };
 
-  const clearWishlist = () => {
-    setWishlistItems([]);
+  const removeFromWishlist = async (productId: string) => {
+    try {
+      const { data } = await axios.delete(`${API_URL}/${productId}`, { headers });
+      if (data.status === "success") {
+        setWishlistItems((prev) => prev.filter((item) => item._id !== productId));
+        toast.info("🗑️ Product removed from wishlist", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        return data;
+      }
+    } catch (error) {
+      console.error("❌ Error removing product:", error);
+      toast.error("Failed to remove product from wishlist", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      throw error;
+    }
   };
+
+  useEffect(() => {
+    if (token) getWishlist();
+  }, [token]);
+
+  const isInWishlist = (productId: string) => {
+    return wishlistItems.some((item) => item._id === productId);
+  };
+
+  const getWishlistCount = () => wishlistItems.length;
 
   return (
-    <WishlistContext.Provider value={{ wishlistItems, addToWishlist, removeFromWishlist, clearWishlist }}>
+    <WishlistContext.Provider
+      value={{
+        wishlistItems,
+        loading,
+        addToWishlist,
+        removeFromWishlist,
+        isInWishlist,
+        getWishlistCount,
+        getWishlist,
+      }}
+    >
       {children}
     </WishlistContext.Provider>
   );
-}
+};
 
 export const useWishlist = () => {
   const context = useContext(WishlistContext);

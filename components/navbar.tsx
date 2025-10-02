@@ -12,6 +12,8 @@ export default function Navbar() {
     { name: "Brands", href: "/brands" },
     { name: "Cart", href: "/cart" },
     { name: "Wishlist", href: "/wishlist" },
+    { name: "Orders", href: "/allorders"} 
+
   ];
 
   return (

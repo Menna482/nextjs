@@ -1,10 +1,18 @@
+"use client";
+import { createContext, useState, useContext, useEffect, ReactNode } from "react";
 
-import { createContext, useState, useContext, useEffect } from "react";
+// نوع البيانات اللي هيخزنها الـ context
+interface TokenContextType {
+  token: string | null;
+  setToken: (token: string | null) => void;
+}
 
-export const TokenContext = createContext();
+// إنشاء الـ context
+export const TokenContext = createContext<TokenContextType | undefined>(undefined);
 
-export const TokenProvider = ({ children }) => {
-  const [token, setToken] = useState(null);
+// الـ Provider
+export const TokenProvider = ({ children }: { children: ReactNode }) => {
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("userToken");
@@ -18,6 +26,7 @@ export const TokenProvider = ({ children }) => {
   );
 };
 
+// hook جاهز للاستخدام
 export const useToken = () => {
   const context = useContext(TokenContext);
   if (!context) throw new Error("useToken must be used within TokenProvider");
